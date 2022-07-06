@@ -1,52 +1,34 @@
-import { useState } from 'react'
+import { useContext, createContext, useReducer } from 'react';
+import Cart from './Cart';
+import ItemsList from './ItemsList';
+import Total from './Total';
+import { CartReducer, initialState, addToCart, addProduct, removeProduct } from './reducer';
 
-const items = [{
-  name: 'apple',
-  price: 0.39
-}, {
-  name: 'banana',
-  price: 0.79
-}, {
-  name: 'cherry tomatoes',
-  price: 3.99
-}]
+
+
+export const CartContest = createContext();
+
 
 function ShoppingCart () {
-  const cart = [{ name: 'apple', quantity: 3, price: 0.39 }]
+  
+  const [state, dispatch] = useReducer(CartReducer, initialState);
+  const value = {
+    total: state.total,
+    cart: state.cart,
+    addToCart: (product) => dispatch(addToCart(product)),
+    addProduct: (product) => dispatch(addProduct(product)),
+    removeProduct: (product) => dispatch(removeProduct(product))
+  }
 
   return (
-    <div>
+    <CartContest.Provider value={value}>
       <h1>Shopping Cart</h1>
       <div className='cart'>
-        <div className='items'>
-          <h2>Items</h2>
-          {items.map(item => (
-            <div key={item.name}>
-              <h3>{item.name}</h3>
-              <p>${item.price}</p>
-              <button>Add to Cart</button>
-            </div>)
-          )}
-        </div>
-        <div>
-          <h2>Cart</h2>
-          {cart.map(item => (
-            <div key={item.name}>
-              <h3>{item.name}</h3>
-              <p>
-                <button>-</button>
-                {item.quantity}
-                <button>+</button>
-              </p>
-              <p>Subtotal: ${item.quantity * item.price}</p>
-            </div>
-          ))}
-        </div>
+        <ItemsList />
+        <Cart />
       </div>
-      <div className='total'>
-        <h2>Total: $0.00</h2>
-      </div>
-    </div>
+      <Total />
+    </CartContest.Provider>
   )
 }
 
